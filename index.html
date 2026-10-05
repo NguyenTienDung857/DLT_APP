@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLTN-Analysis Log</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-shell theme-dark">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <img src="YuRa.ico" class="brand-icon" alt="YuRa">
+        </div>
+        <div class="brand-copy">
+          <h1>BLTN-Analysis Log <span class="brand-version" id="brand-version">v1.0.1</span></h1>
+          <p>DLT timeline and log sharing</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="btn-open" class="btn primary">Open DLT / ENC</button>
+        <button id="btn-log-focus" class="btn">Log focus</button>
+        <div class="help-dropdown" id="help-dropdown">
+          <button id="btn-help" class="btn help-trigger">Help ▾</button>
+          <div class="help-menu hidden" id="help-menu">
+            <button class="help-menu-item" id="btn-guide">Download Guide</button>
+            <div class="help-menu-divider"></div>
+            <button class="help-menu-item" id="btn-check-update">Check for Updates</button>
+            <div class="help-menu-divider"></div>
+            <div class="help-shortcuts">
+              <div class="help-shortcut-title">Shortcuts</div>
+              <div class="help-shortcut"><span>Open log</span><kbd>Ctrl O</kbd></div>
+              <div class="help-shortcut"><span>Search</span><kbd>Ctrl F</kbd></div>
+              <div class="help-shortcut"><span>Log focus</span><kbd>Ctrl L</kbd></div>
+              <div class="help-shortcut"><span>Send chat</span><kbd>Ctrl Enter</kbd></div>
+              <div class="help-shortcut"><span>Zoom in</span><kbd>Ctrl +</kbd></div>
+              <div class="help-shortcut"><span>Zoom out</span><kbd>Ctrl -</kbd></div>
+              <div class="help-shortcut"><span>Reset zoom</span><kbd>Ctrl 0</kbd></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="update-bar" class="update-bar hidden" data-state="">
+      <div class="update-bar-icon" id="update-bar-icon">↻</div>
+      <span id="update-bar-msg"></span>
+      <button id="btn-update-dismiss" class="btn small update-dismiss-btn" title="Dismiss">✕</button>
+    </div>
+
+    <div id="update-modal-overlay" class="update-modal-overlay hidden">
+      <div class="update-modal" id="update-modal" data-phase="ask">
+
+        <div class="update-modal-phase update-phase-ask">
+          <div class="update-modal-icon-wrap">
+            <div class="update-modal-icon">↓</div>
+            <div class="update-modal-icon-ring"></div>
+          </div>
+          <h3 class="update-modal-title">Update Available!</h3>
+          <p class="update-modal-version" id="update-modal-version">Loading info...</p>
+          <p class="update-modal-sub">Would you like to update now?</p>
+          <div class="update-modal-actions">
+            <button id="btn-update-yes" class="btn primary update-modal-btn-yes">Update Now</button>
+            <button id="btn-update-no" class="btn update-modal-btn-no">Later</button>
+          </div>
+        </div>
+
+        <div class="update-modal-phase update-phase-downloading hidden">
+          <div class="update-downloading-icon">↓</div>
+          <h3 class="update-modal-title">Downloading Update...</h3>
+          <div class="update-dl-progress">
+            <div class="update-dl-track">
+              <div id="update-dl-fill" class="update-dl-fill"></div>
+            </div>
+            <span id="update-dl-pct" class="update-dl-pct">0%</span>
+          </div>
+          <div class="update-dl-meta">
+            <span id="update-dl-size">Preparing...</span>
+            <span id="update-dl-speed"></span>
+          </div>
+        </div>
+
+        <div class="update-modal-phase update-phase-done hidden">
+          <div class="update-done-icon">✓</div>
+          <h3 class="update-modal-title">Update Ready!</h3>
+          <p class="update-modal-version" id="update-done-version"></p>
+          <p class="update-modal-sub">The update has been downloaded.<br>Restart now to apply it.</p>
+          <button id="btn-update-install" class="btn primary update-modal-btn-full">Restart Now</button>
+        </div>
+
+        <div class="update-modal-phase update-phase-error hidden">
+          <div class="update-error-icon">!</div>
+          <h3 class="update-modal-title">Update Error</h3>
+          <p class="update-modal-sub update-error-msg" id="update-error-msg"></p>
+          <div class="update-modal-actions">
+            <button id="btn-update-error-close" class="btn">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <section id="drop-zone" class="drop-zone">
+      <canvas id="stars-canvas" class="stars-canvas"></canvas>
+      <div class="drop-zone-glow glow-1"></div>
+      <div class="drop-zone-glow glow-2"></div>
+      <div class="drop-zone-glow glow-3"></div>
+      <div class="drop-particles">
+        <span class="particle p1"></span>
+        <span class="particle p2"></span>
+        <span class="particle p3"></span>
+        <span class="particle p4"></span>
+        <span class="particle p5"></span>
+        <span class="particle p6"></span>
+        <span class="particle p7"></span>
+        <span class="particle p8"></span>
+        <span class="particle p9"></span>
+        <span class="particle p10"></span>
+      </div>
+      <div class="drop-card">
+        <div class="drop-orbit">
+          <div class="orbit-inner"></div>
+          <div class="orbit-dot"></div>
+        </div>
+        <div class="drop-ring ring-2"></div>
+        <div class="drop-ring ring-3"></div>
+        <h2>Drop .dlt, .enc, .log, or .bin files here</h2>
+        <p>ENC files are decrypted next to the source file, then the app opens that folder so you can choose DLT files.</p>
+        <button id="btn-open-empty" class="btn primary large">Browse Files</button>
+        <p class="hint">Filter your logs, then copy them or save a text file to use in ChatGPT.</p>
+      </div>
+    </section>
+
+    <main id="workspace" class="workspace hidden">
+      <aside class="left-rail panel">
+        <section>
+          <div class="section-title">Message Detail</div>
+          <div id="detail-empty" class="empty-state">Select a row to inspect file and timestamp.</div>
+          <div id="detail-panel" class="detail-panel hidden"></div>
+        </section>
+
+        <section id="search-panel" class="command-strip">
+          <div class="section-title">Search / Filter</div>
+          <div class="search-group keyword-search-row">
+            <input id="search-input" class="input search" placeholder="Search payload or time... (F)">
+            <button id="btn-add-search" class="btn small add-search-btn" type="button" title="Add another keyword search">+</button>
+            <label class="keyword-full-toggle" title="Show all rows and highlight keyword matches">
+              <input id="search-full-toggle" type="checkbox" checked>
+              <span>Full</span>
+            </label>
+          </div>
+          <div id="search-match-bar" class="search-match-bar">
+            <span id="search-match-count">No keyword</span>
+            <div class="search-match-actions">
+              <button id="btn-search-prev-match" class="btn small search-nav-btn" type="button" title="Previous keyword match">&uarr;</button>
+              <button id="btn-search-next-match" class="btn small search-nav-btn" type="button" title="Next keyword match">&darr;</button>
+            </div>
+          </div>
+          <div id="extra-search-list" class="extra-search-list"></div>
+
+          <div class="filter-row compact">
+            <input id="time-from" type="hidden">
+            <input id="time-to" type="hidden">
+            <div id="filter-time-range-panel" class="left-time-range-panel">
+              <div class="range-head compact-range-head">
+                <span id="filter-range-title">ID Range</span>
+                <button id="btn-filter-range-unit" class="btn small range-unit-toggle hidden" type="button"></button>
+                <span id="filter-range-limits">No logs loaded</span>
+              </div>
+              <div class="dual-range compact-dual-range">
+                <div class="dual-range-track"></div>
+                <div id="filter-range-selection" class="dual-range-selection"></div>
+                <input id="filter-range-start" class="range-input range-input-start" type="range" min="0" max="0" step="1" value="0" disabled>
+                <input id="filter-range-end" class="range-input range-input-end" type="range" min="0" max="0" step="1" value="0" disabled>
+              </div>
+              <div class="range-footer compact-range-footer">
+                <span id="filter-range-from-label">-</span>
+                <button id="btn-filter-range-clear" class="btn small" type="button">Full Log</button>
+                <span id="filter-range-to-label">-</span>
+              </div>
+            </div>
+            <div class="filter-action-row">
+              <button id="btn-reset-filter" class="btn small" type="button">Reset Filter</button>
+              <button id="btn-export-csv" class="btn small">Export CSV</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="hidden">
+          <div id="file-list"></div>
+          <div id="parse-status">Idle</div>
+          <div><div id="parse-progress"></div></div>
+        </div>
+
+        <section class="stats-grid">
+          <div class="stat-card"><span>Total</span><strong id="stat-total">0</strong></div>
+          <div class="stat-card"><span>Displayed</span><strong id="stat-filtered">0</strong></div>
+          <div class="stat-card error"><span>Error/Fatal</span><strong id="stat-errors">0</strong></div>
+          <div class="stat-card warn"><span>Warning</span><strong id="stat-warns">0</strong></div>
+          <div class="stat-card"><span>ECU</span><strong id="stat-ecu">0</strong></div>
+          <div class="stat-card"><span>Span</span><strong id="stat-span">-</strong></div>
+        </section>
+
+      </aside>
+
+      <section class="center-stage">
+<div class="log-panel panel">
+            <div id="focus-search-strip" class="focus-search-strip">
+              <button id="btn-focus-search" class="btn small">Search</button>
+              <input id="focus-search-input" class="input focus-search-input hidden" placeholder="Quick search in logs...">
+              <button id="btn-focus-search-close" class="btn small hidden">x</button>
+            </div>
+            <div class="log-header log-grid">
+              <div>#</div>
+              <div><label class="time-toggle"><input id="show-full-time" type="checkbox"> Time</label></div>
+              <div>Delta</div>
+              <div>Payload</div>
+            </div>
+            <div class="log-body">
+              <div id="virtual-scroll" class="virtual-scroll">
+                <div id="virtual-spacer"></div>
+                <div id="rows-layer" class="rows-layer"></div>
+              </div>
+              <div id="log-scrollbar" class="log-scrollbar" title="Drag to scroll log">
+                <div id="log-scrollbar-thumb" class="log-scrollbar-thumb"></div>
+              </div>
+              <canvas id="minimap" class="minimap" width="18"></canvas>
+            </div>
+          </div>
+      </section>
+
+      <aside class="right-rail panel">
+        <section class="chatgpt-panel" aria-labelledby="chatgpt-title">
+          <div class="handoff-heading">
+            <h2 id="chatgpt-title">ChatGPT</h2>
+            <button id="btn-handoff-settings" class="btn small" type="button" title="Open link settings" aria-label="Open link settings" aria-expanded="false">⚙</button>
+          </div>
+          <div id="handoff-settings" class="hidden">
+            <label class="field-label" for="handoff-url">Link to open</label>
+            <input id="handoff-url" class="input" type="url" placeholder="https://chatgpt.com/">
+            <button id="btn-handoff-url-save" class="btn small" type="button">Save link</button>
+            <p class="hint">Leave empty to use https://chatgpt.com/</p>
+          </div>
+          <label class="field-label" for="handoff-scope">Log scope</label>
+          <select id="handoff-scope" class="select">
+            <option value="all">All loaded logs</option>
+            <option value="selection">Current line</option>
+            <option value="filtered" selected>Filtered logs</option>
+            <option value="viewport">Lines on screen</option>
+          </select>
+          <p id="handoff-count" class="handoff-count">0 rows selected</p>
+          <div class="handoff-actions">
+          <button id="btn-copy-log" class="btn small" type="button" disabled>Copy</button>
+          <button id="btn-handoff" class="btn primary full" type="button" disabled>Copy &amp; open ChatGPT</button>
+          </div>
+          <p id="handoff-status" class="handoff-status" role="status" aria-live="polite">Load logs to get started.</p>
+          <p class="handoff-help">Press Ctrl+V in your chat to paste the copied logs.</p>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

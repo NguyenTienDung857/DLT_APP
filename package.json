@@ -1,0 +1,82 @@
+{
+  "name": "nexus-dlt-ai-desktop",
+  "version": "1.2.7",
+  "description": "Desktop DLT log viewer with clipboard sharing and custom chat links.",
+  "main": "electron-main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win --x64",
+    "check": "node scripts/smoke-check.js && node scripts/check-handoff.js",
+    "syntax": "node --check electron-main.js && node --check preload.js && node --check renderer.js && node --check src/parser/dltParser.js && node --check src/workers/parseWorker.js && node --check src/services/exporter.js && node --check src/services/encDecryptor.js && node --check src/services/logTextFormatter.js && node --check src/services/chatgptHandoff.js && node --check src/workers/logTextWorker.js",
+    "check:ui": "electron scripts/check-electron-ui.js"
+  },
+  "keywords": [
+    "dlt",
+    "electron",
+    "ecu",
+    "diagnostics"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "build": {
+    "appId": "com.bltn.analysis-log",
+    "productName": "BLTN-Analysis Log",
+    "artifactName": "BLTN-Analysis-Log-Setup-${version}.${ext}",
+    "icon": "YuRa-256.png",
+    "asar": false,
+    "files": [
+      "electron-main.js",
+      "preload.js",
+      "index.html",
+      "renderer.js",
+      "style.css",
+      "YuRa.ico",
+      "YuRa-256.png",
+      "README.md",
+      "USER_GUIDE_EN.md",
+      "package.json",
+      "src/**/*",
+      "DecryptDll.dll",
+      "libcrypto-3-x64.dll"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "YuRa-256.png",
+      "signAndEditExecutable": false,
+      "verifyUpdateCodeSignature": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BLTN-Analysis Log"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "NguyenTienDung857",
+        "repo": "DLT_APP"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^41.3.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}
